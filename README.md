@@ -188,6 +188,12 @@ Content of file “chainsaw.ps1”:
 # Output converted to JSON and appended to active-responses.log
 ##########
 $ErrorActionPreference = "SilentlyContinue"
+#Create Chainsaw Output Folder if doesn't exist
+$chainsaw_output = "$env:TMP\chainsaw_output"
+If(!(test-path $chainsaw_output))
+{
+      New-Item -ItemType Directory -Force -Path $chainsaw_output
+}
 # RUN CHAINSAW AND STORE CSVs in TMP folder
 c:\"Program Files"\chainsaw\chainsaw.exe hunt  --csv $env:TMP\chainsaw_output --lateral-all --rules c:\"Program Files"\chainsaw\sigma_rules --mapping c:\"Program Files"\chainsaw\mapping_files\sigma-mapping.yml --col-width 2000 win_default
 Get-ChildItem $env:TMP\chainsaw_output -Filter *.csv |
