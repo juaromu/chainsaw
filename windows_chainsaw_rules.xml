@@ -1,91 +1,66 @@
-<!-- Chainsaw Tool - Detection Rules -->
 <group name="windows,chainsaw,">
-<!-- Windows Defender -->
  <rule id="200001" level="10">
-    <field name="system_time">\.+</field>
-    <field name="threat_name">\.+</field>
-    <field name="threat_file">\.+</field>
-    <description>Chainsaw Forensics - Windows Defender</description>
+    <field name="timestamp">\.+</field>
+    <field name="detections">\.+</field>
+    <field name="Event ID">^1$</field>
+    <description>Chainsaw Forensics - Suspicious Process Creation</description>
+    <group>process_creation,</group>
     <options>no_full_log</options>
-    <group>windows_defender_forensics,</group>
   </rule>
-<!-- Process Creation -->
  <rule id="200002" level="10">
-   <field name="system_time">\.+</field>
-   <field name="detection_rules">\.+</field>
-   <field name="command_line">\.+</field>
-   <description>Chainsaw Forensics - Process Creation</description>
+   <field name="timestamp">\.+</field>
+   <field name="detections">\.+</field>
+   <field name="Event ID">^3$</field>
+   <description>Chainsaw Forensics - Suspicious Network Connection</description>
+   <group>network_connection,</group>   
    <options>no_full_log</options>
-   <group>process_creation_forensics,</group>
  </rule>
-<!-- Command Line -->
  <rule id="200003" level="10">
-   <field name="system_time">\.+</field>
-   <field name="detection_rules">\.+</field>
-   <field name="process_name">\.+</field>
-   <description>Chainsaw Forensics - Command Line</description>
+   <field name="timestamp">\.+</field>
+   <field name="detections">\.+</field>
+   <field name="Event ID">^7$</field>
+   <description>Chainsaw Forensics - Suspicious Image Load</description>
+   <group>image_loaded,</group>   
    <options>no_full_log</options>
-   <group>command_line_forensics,</group>
  </rule>
-<!-- File Creation -->
  <rule id="200004" level="10">
-   <field name="system_time">\.+</field>
-   <field name="detection_rules">\.+</field>
-   <field name="image">\.+</field>
-   <description>Chainsaw Forensics - File Creation</description>
+   <field name="timestamp">\.+</field>
+   <field name="detections">\.+</field>
+   <field name="Event ID">^11$</field>
+   <description>Chainsaw Forensics - Suspicious File Creation</description>
+   <group>file_creation,</group>   
    <options>no_full_log</options>
-   <group>file_creation_forensics,</group>
  </rule>
-<!-- Registry Event -->
  <rule id="200005" level="10">
-   <field name="system_time">\.+</field>
-   <field name="detection_rules">\.+</field>
-   <field name="target_object">\.+</field>
-   <description>Chainsaw Forensics - Registry Event</description>
+   <field name="timestamp">\.+</field>
+   <field name="detections">\.+</field>
+   <field name="Event ID">^13$</field>
+   <description>Chainsaw Forensics - Suspicious Registry Event</description>
+   <group>registry_event,</group>   
    <options>no_full_log</options>
-   <group>registry_event_forensics,</group>
  </rule>
-<!-- Image Loaded -->
  <rule id="200006" level="10">
-  <field name="system_time">\.+</field>
-  <field name="detection_rules">\.+</field>
-  <field name="image_loaded">\.+</field>
-  <description>Chainsaw Forensics - Image Loaded</description>
+  <field name="timestamp">\.+</field>
+  <field name="detections">\.+</field>
+  <field name="Event ID">^7045$</field>
+  <description>Chainsaw Forensics - Suspicious Service Installed</description>
+  <group>service_installed,</group>  
   <options>no_full_log</options>
-  <group>image_loaded_forensics,</group>
  </rule>
  <rule id="200007" level="10">
-  <field name="system_time">\.+</field>
-  <field name="target_username">\.+</field>
-  <field name="logon_type">\.+</field>
-  <description>Chainsaw Forensics - RDP Logins</description>
+  <field name="timestamp">\.+</field>
+  <field name="detections">\.+</field>
+  <field name="Event ID">^4688$</field>
+  <description>Chainsaw Forensics - Suspicious Command Line</description>
+  <group>command_line,</group>
   <options>no_full_log</options>
-  <group>rdp_logins_forensics,</group>
  </rule>
-<!-- User added to Group -->
  <rule id="200008" level="10">
-  <field name="system_time">\.+</field>
-  <field name="user_sid">\.+</field>
-  <field name="target_group">\.+</field>
-  <description>Chainsaw Forensics - User Added to Group</description>
+  <field name="timestamp">\.+</field>
+  <field name="detections">\.+</field>
+  <field name="Event ID">^4698$</field>
+  <description>Chainsaw Forensics - Suspicious Scheduled Task Created</description>
+  <group>scheduled_task,</group>  
   <options>no_full_log</options>
-  <group>user_group_forensics,</group>
- </rule>
-<!-- User added to System -->
- <rule id="200009" level="10">
-  <field name="system_time">\.+</field>
-  <field name="target_username">\.+</field>
-  <field name="user_sid">\.+</field>
-  <description>Chainsaw Forensics - User Added to the System</description>
-  <options>no_full_log</options>
-  <group>user_system_forensics,</group>
- </rule>
-<!-- Event Log Cleared -->
- <rule id="200010" level="10">
-  <field name="system_time">\.+</field>
-  <field name="subject_user">\.+</field>
-  <description>Chainsaw Forensics - Event Log Cleared</description>
-  <options>no_full_log</options>
-  <group>event_log_forensics,</group>
  </rule>
 </group>

@@ -25,132 +25,261 @@ In hunt mode, chainsaw can be executed with built-in capabilities only (see Gith
 
 The following subsections cover the metadata collected for each category.
 
+```
+---
+name: Chainsaw's Sigma mappings for Event Logs
+kind: evtx
+rules: sigma
 
-### Windows Defender
+ignore:
+  - Defense evasion via process reimaging
+  - Exports Registry Key To an Alternate Data Stream
+  - NetNTLM Downgrade Attack
+  - Non Interactive PowerShell
+  - Wuauclt Network Connection
 
+groups:
+  - name: Suspicious Process Creation
+    timestamp: Event.System.TimeCreated
+    filter:
+      int(EventID): 1
+      Provider: Microsoft-Windows-Sysmon
+    fields:
+      - from: Provider
+        to: Event.System.Provider
+        visible: false
+      - name: Event ID
+        from: EventID
+        to: Event.System.EventID
+      - name: Record ID
+        from: EventRecordID
+        to: Event.System.EventRecordID
+      - name: Computer
+        from: Computer
+        to: Event.System.Computer
+      - name: Image
+        from: Image
+        to: Event.EventData.Image
+      - name: Command Line
+        from: CommandLine
+        to: Event.EventData.CommandLine
+      - name: Original File Name
+        from: OriginalFileName
+        to: Event.EventData.OriginalFileName
+      - name: Parent Image
+        from: ParentImage
+        to: Event.EventData.ParentImage
+      - name: Parent Command Line
+        from: ParentCommandLine
+        to: Event.EventData.ParentCommandLine
 
+  - name: Suspicious Network Connection
+    timestamp: Event.System.TimeCreated
+    filter:
+      int(EventID): 3
+      Provider: Microsoft-Windows-Sysmon
+    fields:
+      - from: Provider
+        to: Event.System.Provider
+        visible: false
+      - name: Event ID
+        from: EventID
+        to: Event.System.EventID
+      - name: Record ID
+        from: EventRecordID
+        to: Event.System.EventRecordID
+      - name: Computer
+        from: Computer
+        to: Event.System.Computer
+      - name: User
+        from: User
+        to: Event.EventData.User
+      - name: Image
+        from: Image
+        to: Event.EventData.Image
+      - name: Destination IP
+        from: DestinationIp
+        to: Event.EventData.DestinationIp
+      - name: Destination Port
+        from: DestinationPort
+        to: Event.EventData.DestinationPort
+      - name: Destination Hostname
+        from: DestinationHostname
+        to: Event.EventData.DestinationHostname
+      - name: Destination Is IPv6
+        from: DestinationIsIpv6
+        to: Event.EventData.DestinationIsIpv6
+        visible: false
+      - name: Initiated
+        from: Initiated
+        to: Event.EventData.Initiated
+      - name: Source Port
+        from: SourcePort
+        to: Event.EventData.SourcePort
 
-* system_time
-* id
-* computer
-* threat_name
-* threat_file
-* user
+  - name: Suspicious Image Load
+    timestamp: Event.System.TimeCreated
+    filter:
+      int(EventID): 7
+      Provider: Microsoft-Windows-Sysmon
+    fields:
+      - from: Provider
+        to: Event.System.Provider
+        visible: false
+      - name: Event ID
+        from: EventID
+        to: Event.System.EventID
+      - name: Record ID
+        from: EventRecordID
+        to: Event.System.EventRecordID
+      - name: Computer
+        from: Computer
+        to: Event.System.Computer
+      - name: Image
+        from: Image
+        to: Event.EventData.Image
+      - name: Image Loaded
+        from: ImageLoaded
+        to: Event.EventData.ImageLoaded
 
+  - name: Suspicious File Creation
+    timestamp: Event.System.TimeCreated
+    filter:
+      int(EventID): 11
+      Provider: Microsoft-Windows-Sysmon
+    fields:
+      - from: Provider
+        to: Event.System.Provider
+        visible: false
+      - name: Event ID
+        from: EventID
+        to: Event.System.EventID
+      - name: Record ID
+        from: EventRecordID
+        to: Event.System.EventRecordID
+      - name: Computer
+        from: Computer
+        to: Event.System.Computer
+      - name: Image
+        from: Image
+        to: Event.EventData.Image
+      - name: Target File Name
+        from: TargetFilename
+        to: Event.EventData.TargetFilename
 
-### Suspicious Process Creation
+  - name: Suspicious Registry Event
+    timestamp: Event.System.TimeCreated
+    filter:
+      int(EventID): 13
+      Provider: Microsoft-Windows-Sysmon
+    fields:
+      - from: Provider
+        to: Event.System.Provider
+        visible: false
+      - name: Event ID
+        from: EventID
+        to: Event.System.EventID
+      - name: Record ID
+        from: EventRecordID
+        to: Event.System.EventRecordID
+      - name: Computer
+        from: Computer
+        to: Event.System.Computer
+      - name: Image
+        from: Image
+        to: Event.EventData.Image
+      - name: Details
+        from: Details
+        to: Event.EventData.Details
+      - name: Target Object
+        from: TargetObject
+        to: Event.EventData.TargetObject
 
+  - name: Suspicious Service Installed
+    timestamp: Event.System.TimeCreated
+    filter:
+      int(EventID): 7045
+      Provider: Service Control Manager
+    fields:
+      - from: Provider
+        to: Event.System.Provider
+        visible: false
+      - name: Event ID
+        from: EventID
+        to: Event.System.EventID
+      - name: Record ID
+        from: EventRecordID
+        to: Event.System.EventRecordID
+      - name: Computer
+        from: Computer
+        to: Event.System.Computer
+      - name: Service
+        from: ServiceName
+        to: Event.EventData.ServiceName
+      # TODO: Can someone check if this is a typo...?
+      - name: Command Line
+        from: CommandLine
+        to: Event.EventData.ImagePath
 
+  - name: Suspicious Command Line
+    timestamp: Event.System.TimeCreated
+    filter:
+      int(EventID): 4688
+      Provider: Microsoft-Windows-Security-Auditing
+    fields:
+      - from: Provider
+        to: Event.System.Provider
+        visible: false
+      - name: Event ID
+        from: EventID
+        to: Event.System.EventID
+      - name: Record ID
+        from: EventRecordID
+        to: Event.System.EventRecordID
+      - name: Computer
+        from: Computer
+        to: Event.System.Computer
+      - name: User
+        from: UserName
+        to: Event.EventData.SubjectUserName
+      # TODO: Can someone check if this is a typo...?
+      - name: Process
+        from: Image
+        to: Event.EventData.NewProcessName
+      - name: Command Line
+        from: CommandLine
+        to: Event.EventData.CommandLine
 
-* System_time,
-* Id,
-* Detection_rules,
-* Computer_name,
-* Event.EventData.Image,
-* command_line
+  - name: Suspicious Scheduled Task Created
+    timestamp: Event.System.TimeCreated
+    filter:
+      int(EventID): 4698
+      Provider: Microsoft-Windows-Security-Auditing
+    fields:
+      - from: Provider
+        to: Event.System.Provider
+        visible: false
+      - name: Event ID
+        from: EventID
+        to: Event.System.EventID
+      - name: Record ID
+        from: EventRecordID
+        to: Event.System.EventRecordID
+      - name: Computer
+        from: Computer
+        to: Event.System.Computer
+      - name: User
+        from: UserName
+        to: Event.EventData.SubjectUserName
+      - name: Name
+        from: TaskName 
+        to: Event.EventData.TaskName
+      # TODO: Can someone check if this is a typo...?
+      - name: Command Line
+        from: CommandLine
+        to: Event.EventData.TaskContent
 
-
-### Suspicious command line
-
-
-
-* System_time,
-* Id,
-* Detection_rules,
-* Computer_name,
-* Event.EventData.CommandLine,
-* process_name
-
-
-### Suspicious File Creation
-
-
-
-* System_time,
-* Id,
-* Detection_rules,
-* Computer_name,
-* Event.EventData.TargetFilename,
-* image
-
-
-### Suspicious Registry Event
-
-
-
-* System_time,
-* Id,
-* Detection_rules,
-* Computer_name,
-* Event.EventData.Details,
-* target_object
-
-
-### Suspicious Image Load
-
-
-
-* System_time,
-* Id,
-* Detection_rules,
-* Computer_name,
-* Event.EventData.Image,
-* image_loaded
-
-
-### RDP Logins
-
-
-
-* System_time,
-* Id,
-* Workstation_name,
-* Target_username,
-* Source_ip,
-* logon_type
-
-
-### User added to “interesting” group
-
-
-
-* System_time,
-* Id,
-* Computer,
-* Change_type,
-* User_sid,
-* target_group
-
-
-### New user added to the system
-
-
-
-* System_time,
-* Id,
-* Computer,
-* Target_username,
-* user_sid
-
-
-### Security Audit Log was cleared
-
-
-
-* System_time,
-* Id,
-* Computer,
-* subject_user
-
-
-### System Log was cleared
-
-
-
-* System_time,
-* Id,
-* Computer,
-* subject_user
+```
 
 
 ## Workflow
@@ -169,151 +298,10 @@ Chainsaw powershell script execution:
 
 
 ```
-powershell.exe  -ExecutionPolicy Bypass -File "C:\Program Files\chainsaw\chainsaw.ps1"
+powershell.exe  -ExecutionPolicy Bypass -File "C:\Program Files\socfortress\chainsaw\chainsaw.ps1"
 ```
-
-
-Content of file “chainsaw.ps1”:
-
-
-```
-################################
-### Script to execute F-Secure/Chainsaw - Identify Malicious activities recorded in WinEvtLogs using Sigma Rules
-### Aurora Networks Managed Services
-### https://www.auroranetworks.net
-### info@auroranetworks.net
-################################
-##########
-# Chainsaw will be run against all event logs found in the default location
-# Output converted to JSON and appended to active-responses.log
-##########
-$ErrorActionPreference = "SilentlyContinue"
-#Create Chainsaw Output Folder if doesn't exist
-$chainsaw_output = "$env:TMP\chainsaw_output"
-If(!(test-path $chainsaw_output))
-{
-      New-Item -ItemType Directory -Force -Path $chainsaw_output
-}
-# RUN CHAINSAW AND STORE CSVs in TMP folder
-c:\"Program Files"\chainsaw\chainsaw.exe hunt  --csv $env:TMP\chainsaw_output --lateral-all --rules c:\"Program Files"\chainsaw\sigma_rules --mapping c:\"Program Files"\chainsaw\mapping_files\sigma-mapping.yml --col-width 2000 win_default
-Get-ChildItem $env:TMP\chainsaw_output -Filter *.csv |
-Foreach-Object {
-    $count = 0
-    $Chainsaw_Array = Get-Content $_.FullName | ConvertFrom-Csv
-    Foreach ($item in $Chainsaw_Array) {
-        echo $item | ConvertTo-Json -Compress | Out-File -width 2000 C:\"Program Files (x86)"\ossec-agent\active-response\active-responses.log -Append -Encoding ascii
-    # Sleep 2 seconds every 5 runs
-         if(++$count % 5 -eq 0) 
-            {
-                Start-Sleep -Seconds 2
-            }
-         }
-}
-```
-
 
 Chainsaw can also be regularly executed, triggered by a wodle command config on Wazuh manager.
 
 Based on Chainsaw categories mentioned earlier, we can now build Wazuh’s detection rules.
 
-Detection Rules:
-
-
-```
-<!-- Chainsaw Tool - Detection Rules -->
-<group name="windows,chainsaw,">
-<!-- Windows Defender -->
- <rule id="200001" level="10">
-    <field name="system_time">\.+</field>
-    <field name="threat_name">\.+</field>
-    <field name="threat_file">\.+</field>
-    <description>Chainsaw Forensics - Windows Defender</description>
-    <options>no_full_log</options>
-    <group>windows_defender_forensics,</group>
-  </rule>
-<!-- Process Creation -->
- <rule id="200002" level="10">
-   <field name="system_time">\.+</field>
-   <field name="detection_rules">\.+</field>
-   <field name="command_line">\.+</field>
-   <description>Chainsaw Forensics - Process Creation</description>
-   <options>no_full_log</options>
-   <group>process_creation_forensics,</group>
- </rule>
-<!-- Command Line -->
- <rule id="200003" level="10">
-   <field name="system_time">\.+</field>
-   <field name="detection_rules">\.+</field>
-   <field name="process_name">\.+</field>
-   <description>Chainsaw Forensics - Command Line</description>
-   <options>no_full_log</options>
-   <group>command_line_forensics,</group>
- </rule>
-<!-- File Creation -->
- <rule id="200004" level="10">
-   <field name="system_time">\.+</field>
-   <field name="detection_rules">\.+</field>
-   <field name="image">\.+</field>
-   <description>Chainsaw Forensics - File Creation</description>
-   <options>no_full_log</options>
-   <group>file_creation_forensics,</group>
- </rule>
-<!-- Registry Event -->
- <rule id="200005" level="10">
-   <field name="system_time">\.+</field>
-   <field name="detection_rules">\.+</field>
-   <field name="target_object">\.+</field>
-   <description>Chainsaw Forensics - Registry Event</description>
-   <options>no_full_log</options>
-   <group>registry_event_forensics,</group>
- </rule>
-<!-- Image Loaded -->
- <rule id="200006" level="10">
-  <field name="system_time">\.+</field>
-  <field name="detection_rules">\.+</field>
-  <field name="image_loaded">\.+</field>
-  <description>Chainsaw Forensics - Image Loaded</description>
-  <options>no_full_log</options>
-  <group>image_loaded_forensics,</group>
- </rule>
- <rule id="200007" level="10">
-  <field name="system_time">\.+</field>
-  <field name="target_username">\.+</field>
-  <field name="logon_type">\.+</field>
-  <description>Chainsaw Forensics - RDP Logins</description>
-  <options>no_full_log</options>
-  <group>rdp_logins_forensics,</group>
- </rule>
-<!-- User added to Group -->
- <rule id="200008" level="10">
-  <field name="system_time">\.+</field>
-  <field name="user_sid">\.+</field>
-  <field name="target_group">\.+</field>
-  <description>Chainsaw Forensics - User Added to Group</description>
-  <options>no_full_log</options>
-  <group>user_group_forensics,</group>
- </rule>
-<!-- User added to System -->
- <rule id="200009" level="10">
-  <field name="system_time">\.+</field>
-  <field name="target_username">\.+</field>
-  <field name="user_sid">\.+</field>
-  <description>Chainsaw Forensics - User Added to the System</description>
-  <options>no_full_log</options>
-  <group>user_system_forensics,</group>
- </rule>
-<!-- Event Log Cleared -->
- <rule id="200010" level="10">
-  <field name="system_time">\.+</field>
-  <field name="subject_user">\.+</field>
-  <description>Chainsaw Forensics - Event Log Cleared</description>
-  <options>no_full_log</options>
-  <group>event_log_forensics,</group>
- </rule>
-</group>
-```
-
-
-Each category is mapped to a different rule group, and all of them grouped under [windows,chainsaw].
-
-As mentioned earlier, and due to a bug in the existing release of chainsaw, CSV files are not gerenared properly and events in some categories aren’t properly parsed.
